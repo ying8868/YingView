@@ -1,0 +1,210 @@
+<html>
+
+<head>
+    <title>股票池推荐系统</title>
+    <link href="https://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="https://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/zclip/1.1.2/jquery.zclip.min.js"></script>
+
+</head>
+<style>
+    .tablem th,
+    .tablem td {
+        text-align: center;
+        vertical-align: middle !important;
+    }
+
+    .myred {
+        color: rgb(255, 51, 51);
+
+    }
+
+    .mygreen {
+        background-color: rgb(150, 207, 150);
+        color: white;
+    }
+
+    .jiacu {
+        font-weight: 450;
+    }
+
+    .my_mouse {
+        cursor: default
+    }
+
+    .on_click {
+        background-color: rgb(255, 51, 51);
+    }
+
+    body {
+        font-family: "Microsoft Yahei", 微软雅黑, "Helvetica Neue", Arial, sans-serif;
+    }
+</style>
+<script>
+    
+    /*https://cdn.bootcss.com/zclip/1.1.2/ZeroClipboard.swf*/
+    $.gubiao = function (gub) {
+        // $(gub).attr("id",'on_hot')
+
+        $(gub).addClass("on_click");
+        $(gub).siblings().removeClass('on_click');
+        if ($(gub).attr("sort") != undefined) {
+            ssu =  'http://127.0.0.1:81/gubiaochi?sort=' + $(gub).attr("sort") + '&sv=' + $(gub).attr("sv")
+        }
+        esturl = 'http://quote.eastmoney.com/concept/'
+        estw = '.html?from=classic#fschart-r'
+        $.get(ssu, function (data, status) {
+
+            if (status == "success") {
+                if(data != -1){
+                var obj = jQuery.parseJSON(data);
+                html = ''
+                for (i in obj) {
+                    trcss = 'class="tablem success"'
+                    if (i % 2 == 0) {
+                        trcss = 'class="tablem info "'
+                    }
+                    o = obj[i]
+                    if (o.pice > o.open) {
+                        csclass = 'myred'
+                    } else {
+                        csclass = 'mygreen'
+                    }
+                    if (o.sc == 1) {
+                        url = esturl + 'sh' + o.code + estw
+                    }
+                    if (o.sc == 2) {
+                        url = esturl + 'sz' + o.code + estw
+                    }
+                     
+
+                    hi = '<tr ' + trcss + ' ><td>' + i + '</td><td class="jiacu">' + o.code + '</td><td class="jiacu "> <a  href=' + url + ' target="view_window">' + o.name + '</a></td> <td class="' + csclass + '">' + o.pice + '</td><td>' + (o.jd).toFixed(2)
+                        + '</td><td class ="' + csclass + '">' + o.nzdf + '</td><td>' + o.yd_count + '</td><td>' + o.yd_mod_count + '</td><td>' + o.zfc.toFixed(2) + '</td><td>' + o.open + '</td><td  class="' + csclass + '" >' + o.close + '</td><td>' + o.hsl + '</td><td class ="' + csclass + '">' + o.lb + '</td><td>' + o.ylw.toFixed(2)
+                        + '</td><td class ="' + csclass + '">' + o.yl.toFixed(2) + '</td><td>' + o.zhenf + '</td></tr>';
+
+                    html = html + hi
+                    //.text(obj[i].name)
+                }
+                $('#td_chi').html(html)
+            }
+            }
+
+        });
+    }
+    $(function () {
+        $('#time').text('北京时间:' + new Date().toLocaleString())
+        setInterval(regubiao, 2000);
+        //$.gubiao('#gubiao')   
+        function regubiao() {
+            $('#time').text('北京时间:' + new Date().toLocaleString())
+        }
+        $.gubiao('#gubiao')
+        //esturl='http://quote.eastmoney.com/concept/sh601519.html?from=classic#fschart-r' 
+        
+        $("th").click(function () {
+            /*当 单击 标题栏的时候所需要进行的操作 */
+            $.gubiao(this)
+
+        });
+
+        $("th").dblclick(function () {
+            /*当 双击 标题栏的时候所需要进行的操作 */
+            sv = $(this).attr("sv")
+            if (sv == -1) {
+                $('th').attr("sv", '-1')
+                $(this).attr("sv", '1')
+            } else {
+                $('th').attr("sv", '-1')
+            }
+            $.gubiao(this)
+        });
+    });
+
+
+</script>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="span1">
+
+            </div>
+            <div class="span8">
+
+                <h1 class="text-center">
+                    股票池推荐系统
+
+                </h1>
+
+                <button id="time" class="btn   btn-large" type="button"> </button>
+                
+                <table class="table  table-bordered my_mouse">
+                    <thead id='th_id'>
+                        <tr class="  tablem">
+                            <th>
+
+                                序号
+                            </th>
+                            <th sort="code" sv='-1'>
+                                股票代码
+                            </th>
+                            <th>
+                                股票名称
+                            </th>
+                            <th sort="pice" sv='-1'>
+                                价格
+                            </th>
+                            <th sort="jd" sv='-1'>
+                                角度
+                            </th>
+                            <th sort="nzdf" sv='-1' id='gubiao'>
+                                涨幅
+                            </th>
+                            <th sort="yd_count" sv='-1'>
+                                异动
+                            </th>
+                            <th sort="yd_mod_count" sv='-1'>
+                                异动数
+                            </th>
+                            <th sort="zdfc" sv='-1'>
+                                涨幅差
+                            </th>
+                            <th sort="open" sv='-1'>
+                                开盘价
+                            </th>
+                            <th sort="close" sv='-1'>
+                                昨收
+                            </th>
+                            <th sort="hsl" sv='-1'>
+                                换手率
+                            </th>
+                            <th sort="lb" sv='-1'>
+                                量比
+                            </th>
+                            <th sort="ylw" sv='-1'>
+                                压力位
+                            </th>
+                            <th sort="yl" sv='-1'>
+                                压力
+                            </th> 
+                            <th sort="zhenf" sv='-1'>
+                                振幅
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="td_chi" class="info">
+                    </tbody>
+                </table> 
+            </div>
+            <div class="span1 ">
+
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+
+</html>
